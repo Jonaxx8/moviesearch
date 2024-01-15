@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:moviesearch/screens/home_screen.dart';
 import 'package:moviesearch/screens/signup_page.dart';
+import 'package:moviesearch/util/custom_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -22,7 +25,6 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initSharedPref();
   }
@@ -37,20 +39,63 @@ class _SignInPageState extends State<SignInPage> {
         "email": emailController.text,
         "password": passwordController.text
       };
-      var response = await http.post(Uri.parse(login),
+      try {
+        var response = await http.post(
+          Uri.parse(login),
           headers: {"Content-Type": "application/json"},
-          body: jsonEncode(reqBody));
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status']) {
-        var myToken = jsonResponse['token'];
-        prefs.setString('token', myToken);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomeScreen(token: myToken)));
-      } else {
-        print('Something went wrong');
+          body: jsonEncode(reqBody),
+        );
+
+        // ignore: avoid_print
+        print('Status Code: ${response.statusCode}');
+        // ignore: avoid_print
+        print('Response Body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          var jsonResponse = jsonDecode(response.body);
+
+          if (jsonResponse.containsKey('status')) {
+            if (jsonResponse['status']) {
+              // User login successful
+              var myToken = jsonResponse['token'];
+              prefs.setString('token', myToken);
+
+              showCustomSnackBar(context, 'Logged in successfully!',
+                  const Color.fromARGB(255, 36, 152, 247));
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(token: myToken),
+                ),
+              );
+            } else {
+              // Login failed
+              showCustomSnackBar(
+                  context, 'Invalid email or password', Colors.red);
+            }
+          } else {
+            print("Unexpected response format. 'status' key not found.");
+          }
+        } else {
+          print('Error: ${response.statusCode}');
+          // Handle non-200 status code appropriately
+        }
+      } catch (error) {
+        print('Error sending HTTP request: $error');
       }
+    } else {
+      setState(() {
+        _isNotValidate = true;
+      });
+
+      // Show snackbar for validation error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter proper information'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -60,57 +105,78 @@ class _SignInPageState extends State<SignInPage> {
       child: Scaffold(
         body: Center(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Text('Sign In Page'),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    errorText: _isNotValidate ? "Enter Proper Info" : null,
-                    errorStyle: const TextStyle(color: Colors.white),
-                    hintText: "Enter Email",
-                    hintStyle: const TextStyle(color: Colors.white),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/camera.png',
+                    height: 200,
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    errorText: _isNotValidate ? "Enter Proper Info" : null,
-                    errorStyle: const TextStyle(color: Colors.white),
-                    hintText: "Enter Password",
-                    hintStyle: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      errorText: _isNotValidate ? 'Enter proper info' : null,
+                      errorStyle: const TextStyle(color: Colors.red),
+                      hintText: 'Enter Email',
+                      hintStyle: const TextStyle(color: Colors.white),
+                    ),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    loginUser();
-                  },
-                  child: const Text('Sign In'),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Don\'t have an account?'),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      errorText: _isNotValidate ? 'Enter proper info' : null,
+                      errorStyle: const TextStyle(color: Colors.red),
+                      hintText: 'Enter Password',
+                      hintStyle: const TextStyle(color: Colors.white),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: loginUser,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.blue),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 50)),
+                      padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    ),
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Don't have an account?",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignUpPage()));
-                      },
-                      child: const Text('Sign Up'),
-                    ),
-                  ],
-                )
-              ],
+                              builder: (context) => const SignUpPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('Sign Up',
+                            style: TextStyle(color: Colors.blue)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

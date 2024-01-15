@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moviesearch/screens/home_screen.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:moviesearch/screens/login_page.dart';
+import 'package:moviesearch/screens/signup_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -30,7 +31,12 @@ class MyApp extends StatelessWidget {
       ),
       home: (token != null && !JwtDecoder.isExpired(token))
           ? HomeScreen(token: token,)
-          : SignInPage(),
+          : const SignInPage(),
+      routes: {
+        '/login': (context) => const SignInPage(),
+        'signup': (context) => const SignUpPage(),
+        '/home': (context) => HomeScreen(token: token,),
+      },
     );
   }
 }
