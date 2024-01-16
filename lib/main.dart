@@ -24,6 +24,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Movie Search App',
       debugShowCheckedModeBanner: false,
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        useMaterial3: true,
+      ),
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.black,

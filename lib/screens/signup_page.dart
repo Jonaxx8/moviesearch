@@ -42,7 +42,6 @@ class _SignUpPageState extends State<SignUpPage> {
           if (jsonResponse.containsKey('status')) {
             if (jsonResponse['status']) {
               // User registration successful
-              // ignore: use_build_context_synchronously
               showCustomSnackBar(context, 'Account created successfully!', Colors.green);
               Navigator.pushReplacement(
                 context,

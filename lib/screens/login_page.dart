@@ -46,9 +46,7 @@ class _SignInPageState extends State<SignInPage> {
           body: jsonEncode(reqBody),
         );
 
-        // ignore: avoid_print
         print('Status Code: ${response.statusCode}');
-        // ignore: avoid_print
         print('Response Body: ${response.body}');
 
         if (response.statusCode == 200) {
