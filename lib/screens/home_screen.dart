@@ -6,6 +6,7 @@ import 'package:moviesearch/pages/main_page.dart';
 import 'package:moviesearch/pages/search_page.dart';
 import 'package:moviesearch/util/custom_snackbar.dart';
 import 'package:moviesearch/widgets/navbar.dart';
+import 'package:moviesearch/widgets/sort_dropdown.dart';
 
 class HomeScreen extends StatefulWidget {
   final token;
@@ -53,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           automaticallyImplyLeading: false,
           actions: [
+            const SortDropdown(),
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: _handleLogout,
