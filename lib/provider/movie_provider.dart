@@ -17,14 +17,15 @@ class MovieProvider with ChangeNotifier {
 
     const apiKey = movieApi;
     const baseUrl = 'https://api.themoviedb.org/3';
-    final response =
-        await http.get(Uri.parse('$baseUrl/movie/top_rated?api_key=$apiKey&page=$page'));
+    final response = await http.get(
+      Uri.parse('$baseUrl/movie/top_rated?api_key=$apiKey&page=$page'),
+    );
 
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       final List<dynamic> movieList = jsonResponse['results'];
 
-      final List<Movie> newMovies = movieList.take(5).map((movieJson) {
+      final List<Movie> newMovies = movieList.map((movieJson) {
         return Movie(
           name: movieJson['title'],
           year: movieJson['release_date'],
@@ -47,6 +48,7 @@ class MovieProvider with ChangeNotifier {
     });
   }
 }
+
 
   void toggleLike(Movie movie) {
     movie.isLiked = !movie.isLiked;

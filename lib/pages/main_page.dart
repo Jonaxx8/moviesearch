@@ -12,12 +12,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  bool isLoading = false;
-
   @override
   void initState() {
     super.initState();
-    // Fetch top-rated movies when the page is initialized
     Future.delayed(Duration.zero, () {
       Provider.of<MovieProvider>(context, listen: false).fetchTopRatedMovies();
     });
@@ -25,18 +22,24 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LazyLoadScrollView(
-        onEndOfPage: () {
-          // Fetch more top-rated movies when reaching the end of the page
-          if (!isLoading) {
-            Provider.of<MovieProvider>(context, listen: false)
-                .fetchTopRatedMovies();
-          }
-        },
-        child: Consumer<MovieProvider>(
-          builder: (context, movieProvider, child) {
-            return MovieList(movies: movieProvider.movies);
+    return ChangeNotifierProvider<MovieProvider>.value(
+      value: Provider.of<MovieProvider>(context),
+      child: Scaffold(
+        body: Builder(
+          builder: (context) {
+            // Wrap with Builder to get a new context
+            // and avoid calling Provider.of outside build method
+            final movieProvider = Provider.of<MovieProvider>(context);
+
+            return LazyLoadScrollView(
+              onEndOfPage: () {
+                if (!movieProvider.isLoading) {
+                  // Use context.read to avoid triggering rebuild
+                  context.read<MovieProvider>().fetchTopRatedMovies();
+                }
+              },
+              child: MovieList(movies: movieProvider.movies),
+            );
           },
         ),
       ),
