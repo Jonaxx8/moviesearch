@@ -52,12 +52,12 @@ class MovieTile extends StatelessWidget {
                 const  SizedBox(height: 4.0),
                 Text(
                   'Year: ${movie.year}',
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white60),
                 ),
                 const SizedBox(height: 4.0),
                 Text(
                   'IMDb Rating: ${movie.rating}',
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ],
             ),
