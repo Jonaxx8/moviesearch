@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:moviesearch/provider/movie_provider.dart';
 import 'package:moviesearch/screens/home_screen.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:moviesearch/screens/login_page.dart';
 import 'package:moviesearch/screens/signup_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(
-    token: prefs.getString('token'),
-  ));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => MovieProvider(),
+      child: MyApp(token: prefs.getString('token')),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

@@ -4,6 +4,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:moviesearch/pages/favorite_page.dart';
 import 'package:moviesearch/pages/main_page.dart';
 import 'package:moviesearch/pages/search_page.dart';
+import 'package:moviesearch/util/custom_snackbar.dart';
 import 'package:moviesearch/widgets/navbar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,17 +32,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleLogout() {
-    // Perform logout logic here
-    // For example, you can navigate to the login screen and clear user data
     Navigator.pushReplacementNamed(
-        context, '/login'); // Replace '/login' with your actual login route
+        context, '/login'); 
+    showCustomSnackBar(context, 'Logged out successfully!', Colors.green);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Moviesearch'),
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/images/camera.png',
+                height: 30,
+              ),
+              const SizedBox(width: 8.0),
+              const Text('MovieSearch'),
+            ],
+          ),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -55,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: const [
             MainPage(),
             SearchPage(),
-            FavPage(),
+            FavoritePage(),
           ],
           onPageChanged: (index) {
             setState(() {

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/movie_provider.dart';
+import '../widgets/movie_list.dart';
 
-class FavPage extends StatefulWidget {
-  const FavPage({super.key});
+class FavoritePage extends StatelessWidget {
+  const FavoritePage({Key? key}) : super(key: key);
 
-  @override
-  State<FavPage> createState() => _FavPageState();
-}
-
-class _FavPageState extends State<FavPage> {
   @override
   Widget build(BuildContext context) {
-    return const Text('fav page');
+    final favoriteMovies = Provider.of<MovieProvider>(context).likedMovies;
+
+    return Scaffold(
+      body: MovieList(movies: favoriteMovies),
+    );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moviesearch/util/custom_snackbar.dart';
+import 'package:provider/provider.dart';
 import '../models/movie.dart';
+import '../provider/movie_provider.dart';
 
 class MovieTile extends StatelessWidget {
   final Movie movie;
@@ -35,6 +38,27 @@ class MovieTile extends StatelessWidget {
             ),
           ),
           Positioned(
+            top: 8.0,
+            right: 8.0,
+            child: IconButton(
+              icon: Icon(
+                movie.isLiked ? Icons.favorite : Icons.favorite_border,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                final movieProvider =
+                    Provider.of<MovieProvider>(context, listen: false);
+                movieProvider.toggleLike(movie);
+                final snackBarMessage = movie.isLiked
+                    ? 'Added to favorites'
+                    : 'Removed from favorites';
+                final snackBarColor =
+                    movie.isLiked ? Colors.green : Colors.red;
+                showCustomSnackBar(context, snackBarMessage, snackBarColor);
+              },
+            ),
+          ),
+          Positioned(
             bottom: 8.0,
             left: 8.0,
             right: 8.0,
@@ -49,7 +73,7 @@ class MovieTile extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const  SizedBox(height: 4.0),
+                const SizedBox(height: 4.0),
                 Text(
                   'Year: ${movie.year}',
                   style: const TextStyle(color: Colors.white60),
