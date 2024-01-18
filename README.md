@@ -2,6 +2,8 @@
 
 MovieSearch is a dynamic movie search app that seamlessly blends top-rated listings, search functionality, and user favorites. It employs Node.js JWT authentication and leverages the TMDB API for enriched movie data.
 
+Here is the doumentation link for more info : [Documentation URL](https://docs.google.com/document/d/1ZQ7ktsxByOzBTDhkNE7llv4BxUSUL_tlJmCVE35vd-k/edit?usp=sharing)
+
 ## Features
 
 ### Home Page & Infinite Scrolling
